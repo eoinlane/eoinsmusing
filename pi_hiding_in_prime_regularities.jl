@@ -206,7 +206,7 @@ md"""
 """
 
 # ╔═╡ 542584b1-5cff-4096-9626-bda7c57df38c
-radius = 10000
+radius = 100000
 
 # ╔═╡ 72460280-bbfa-492d-8270-e44293266e09
 df_pi = DataFrame(sqrt_radius= 2:radius)
@@ -502,21 +502,12 @@ julia>	@testset "Complex Product" begin \n@test v2(cc25, 25) == Complex[3+4im, 5
 	                push!(org, temp)
 	            end
 	        end
-	        #con
 	        push!(result, prod(org))
 	        push!(result, prod(con))
 	    end
-	    if length(org) == length(con)
-	        for i in 1:length(org)
-	            tmp = con[i]
-	            con[i] = org[i]
-	            org[i] = tmp
-	            push!(result, prod(org))
-	            push!(result, prod(con))
-	        end
-	    else
-	        return Complex[]
-	    end
+		# https://stackoverflow.com/questions/40227282/combinations-of-two-arrays-with-ordering-in-julia
+        combinations = vec(collect(Base.product(zip(org, con)...)))
+        map((x) -> push!(result, prod(x)), combinations)
 	    unique(result)
 	end
 end
@@ -579,6 +570,30 @@ df_pi_1.mod4 = replace(df_pi_1.mod4, nothing => missing)
 
 CSV.write("prime_pi.csv", df_pi_1)
 
+
+# ╔═╡ 1a7ef4a2-50e0-4a72-804e-d07bfb6d2fdc
+# ╠═╡ disabled = true
+#=╠═╡
+polar.(Base.vect.(0.0,angle.(nums)),Base.vect.(0.0,abs.(nums)),marker="o")
+  ╠═╡ =#
+
+# ╔═╡ 0f279169-a831-406d-ae6c-975ef16848a7
+# ╠═╡ disabled = true
+#=╠═╡
+plot(d)
+  ╠═╡ =#
+
+# ╔═╡ b0cc8956-47de-4f5f-a55f-4893fe84cb49
+# ╠═╡ disabled = true
+#=╠═╡
+plot(real(d),imag(d)) # or directly with plot(d)
+  ╠═╡ =#
+
+# ╔═╡ 68913bd8-92f9-41d5-ad90-5e9b7ac75678
+# ╠═╡ disabled = true
+#=╠═╡
+plot.show()
+  ╠═╡ =#
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
