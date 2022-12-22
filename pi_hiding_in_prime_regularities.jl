@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.19.14
+# v0.19.18
 
 using Markdown
 using InteractiveUtils
@@ -18,7 +18,7 @@ end
 using CairoMakie, Makie.GeometryBasics, LaTeXStrings
 
 # ╔═╡ 08a9d538-1eba-11ed-1ac4-c1b15c5bb280
-using DataFrames, StatsBase,  DataStructures
+using DataFrames, StatsBase,  DataStructures ,Primes
 
 # ╔═╡ a28594c7-c134-4548-9ac1-1049bbe14f4b
 using CSV
@@ -182,7 +182,7 @@ begin
 	"""
     primeFactors(number, list = Int[] )
 
-Compute the prime factor of a number
+Compute the prime factor of a number.  See here for implementation
 
 # Examples
 ```julia-repl
@@ -190,14 +190,9 @@ julia> primeFactors(10)
 [2, 5]
 ```
 """
-function primeFactors(number, list = Int[] )
-    for n in 2:number
-		if (number % n == 0)
-			return primeFactors(number / n, push!(list, n))
-		end
+	function primeFactors(x)
+	x = Primes.factor(Vector, x)
 	end
-	list
-end
 end
 
 # ╔═╡ 7463bf07-e164-4580-9a0f-581625994762
@@ -407,7 +402,7 @@ function isPrime(num)
 end
 
 # ╔═╡ 9d7518a1-95a5-42fc-b268-87b100c3e96d
-df_pi.isPrime = isPrime.(df_pi.sqrt_radius)
+df_pi.isPrime = Primes.isprime.(df_pi.sqrt_radius)
 
 # ╔═╡ c056d31e-6351-4d76-b484-fb8013c20b67
 df_pi.mod4 = mod_4.(df_pi.sqrt_radius)
@@ -571,30 +566,6 @@ df_pi_1.mod4 = replace(df_pi_1.mod4, nothing => missing)
 CSV.write("prime_pi.csv", df_pi_1)
 
 
-# ╔═╡ 1a7ef4a2-50e0-4a72-804e-d07bfb6d2fdc
-# ╠═╡ disabled = true
-#=╠═╡
-polar.(Base.vect.(0.0,angle.(nums)),Base.vect.(0.0,abs.(nums)),marker="o")
-  ╠═╡ =#
-
-# ╔═╡ 0f279169-a831-406d-ae6c-975ef16848a7
-# ╠═╡ disabled = true
-#=╠═╡
-plot(d)
-  ╠═╡ =#
-
-# ╔═╡ b0cc8956-47de-4f5f-a55f-4893fe84cb49
-# ╠═╡ disabled = true
-#=╠═╡
-plot(real(d),imag(d)) # or directly with plot(d)
-  ╠═╡ =#
-
-# ╔═╡ 68913bd8-92f9-41d5-ad90-5e9b7ac75678
-# ╠═╡ disabled = true
-#=╠═╡
-plot.show()
-  ╠═╡ =#
-
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
 [deps]
@@ -607,18 +578,20 @@ LaTeXStrings = "b964fa9f-0449-5b57-a5c2-d3ea65f4040f"
 Makie = "ee78f7c6-11fb-53f2-987a-cfe4a2b5a57a"
 PlutoTeachingTools = "661c6b06-c737-4d37-b85c-46df65de6f69"
 PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
+Primes = "27ebfcd6-29c5-5fa9-bf4b-fb8fc14df3ae"
 StatsBase = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
 
 [compat]
 CSV = "~0.10.7"
 CairoMakie = "~0.9.3"
-DataFrames = "~1.4.3"
+DataFrames = "~1.4.4"
 DataStructures = "~0.18.13"
 HypertextLiteral = "~0.9.4"
 LaTeXStrings = "~1.3.0"
 Makie = "~0.18.3"
 PlutoTeachingTools = "~0.2.5"
 PlutoUI = "~0.7.48"
+Primes = "~0.5.3"
 StatsBase = "~0.33.21"
 """
 
@@ -628,7 +601,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.8.3"
 manifest_format = "2.0"
-project_hash = "915911d515421ddcd22568fcfce1fb5455d5977b"
+project_hash = "e6be8429efe2a122c1e856eaba08051e0d103426"
 
 [[deps.AbstractFFTs]]
 deps = ["ChainRulesCore", "LinearAlgebra"]
@@ -810,9 +783,9 @@ version = "1.13.0"
 
 [[deps.DataFrames]]
 deps = ["Compat", "DataAPI", "Future", "InvertedIndices", "IteratorInterfaceExtensions", "LinearAlgebra", "Markdown", "Missings", "PooledArrays", "PrettyTables", "Printf", "REPL", "Random", "Reexport", "SnoopPrecompile", "SortingAlgorithms", "Statistics", "TableTraits", "Tables", "Unicode"]
-git-tree-sha1 = "0f44494fe4271cc966ac4fea524111bef63ba86c"
+git-tree-sha1 = "d4f69885afa5e6149d0cab3818491565cf41446d"
 uuid = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
-version = "1.4.3"
+version = "1.4.4"
 
 [[deps.DataStructures]]
 deps = ["Compat", "InteractiveUtils", "OrderedCollections"]
@@ -1098,6 +1071,11 @@ deps = ["Parsers"]
 git-tree-sha1 = "0cf92ec945125946352f3d46c96976ab972bde6f"
 uuid = "842dd82b-1e85-43dc-bf29-5d0ee9dffc48"
 version = "1.3.2"
+
+[[deps.IntegerMathUtils]]
+git-tree-sha1 = "f366daebdfb079fd1fe4e3d560f99a0c892e15bc"
+uuid = "18e54dd8-cb9d-406c-a71d-865a43cbb235"
+version = "0.1.0"
 
 [[deps.IntelOpenMP_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
@@ -1562,9 +1540,15 @@ version = "1.3.0"
 
 [[deps.PrettyTables]]
 deps = ["Crayons", "Formatting", "LaTeXStrings", "Markdown", "Reexport", "StringManipulation", "Tables"]
-git-tree-sha1 = "d8ed354439950b34ab04ff8f3dfd49e11bc6c94b"
+git-tree-sha1 = "96f6db03ab535bdb901300f88335257b0018689d"
 uuid = "08abe8d2-0d0c-5749-adfa-8a2ac140af0d"
-version = "2.2.1"
+version = "2.2.2"
+
+[[deps.Primes]]
+deps = ["IntegerMathUtils"]
+git-tree-sha1 = "311a2aa90a64076ea0fac2ad7492e914e6feeb81"
+uuid = "27ebfcd6-29c5-5fa9-bf4b-fb8fc14df3ae"
+version = "0.5.3"
 
 [[deps.Printf]]
 deps = ["Unicode"]
@@ -2022,7 +2006,7 @@ version = "3.5.0+0"
 # ╠═fe677804-cf1f-4413-abe4-684943d68d5f
 # ╠═08a9d538-1eba-11ed-1ac4-c1b15c5bb280
 # ╟─f89f32a4-2d1d-4905-90d9-6746576bf432
-# ╟─ea560410-5c83-4fe2-afd5-03d09af0685d
+# ╠═ea560410-5c83-4fe2-afd5-03d09af0685d
 # ╠═7463bf07-e164-4580-9a0f-581625994762
 # ╠═542584b1-5cff-4096-9626-bda7c57df38c
 # ╠═72460280-bbfa-492d-8270-e44293266e09
