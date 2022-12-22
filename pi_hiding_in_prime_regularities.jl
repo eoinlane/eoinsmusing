@@ -182,7 +182,7 @@ begin
 	"""
     primeFactors(number, list = Int[] )
 
-Compute the prime factor of a number.  See here for implementation
+Compute the prime factor of a number.  See here for implementation  http://juliamath.github.io/Primes.jl/v0.3/api.html#Prime-factorization-1
 
 # Examples
 ```julia-repl
@@ -264,8 +264,7 @@ int(x) = floor(Int, x)
 begin
 	"""
     gaussianPrime(arr)
-
-
+	
 Compute the Gaussian primes from a list of primes. See [here for implementation](https://stackoverflow.com/questions/2269810/whats-a-nice-method-to-factor-gaussian-integers)
 
 # Examples
@@ -451,7 +450,7 @@ julia>  cartesian(Complex[2+1im, 2-1im]) = Complex[2+1im, 2-1im]
 ```
 
 ```julia-repl
-julia>	@testset "Complex Product" begin \n@test v2(cc25, 25) == Complex[3+4im, 5+0im, 3-4im] \
+julia>	@testset "Complex Product" begin \\\n @test v2(cc25, 25) == Complex[3+4im, 5+0im, 3-4im] 
     		@test v2(cc125, 125) == Complex[2+11im, 10+5im, 10-5im, 2-11im] \
     		@test v2(cc375, 375) == Complex[] \
     		@test v2(cc1125, 1125) == Complex[6 + 33im, 6 - 33im, 30 + 15im, 30 - 15im] \
@@ -565,6 +564,30 @@ df_pi_1.mod4 = replace(df_pi_1.mod4, nothing => missing)
 
 CSV.write("prime_pi.csv", df_pi_1)
 
+
+# ╔═╡ 1a7ef4a2-50e0-4a72-804e-d07bfb6d2fdc
+# ╠═╡ disabled = true
+#=╠═╡
+polar.(Base.vect.(0.0,angle.(nums)),Base.vect.(0.0,abs.(nums)),marker="o")
+  ╠═╡ =#
+
+# ╔═╡ 0f279169-a831-406d-ae6c-975ef16848a7
+# ╠═╡ disabled = true
+#=╠═╡
+plot(d)
+  ╠═╡ =#
+
+# ╔═╡ b0cc8956-47de-4f5f-a55f-4893fe84cb49
+# ╠═╡ disabled = true
+#=╠═╡
+plot(real(d),imag(d)) # or directly with plot(d)
+  ╠═╡ =#
+
+# ╔═╡ 68913bd8-92f9-41d5-ad90-5e9b7ac75678
+# ╠═╡ disabled = true
+#=╠═╡
+plot.show()
+  ╠═╡ =#
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
