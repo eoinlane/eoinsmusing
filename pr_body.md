@@ -1,0 +1,7 @@
+- Make mod_4 total and typed; fix Χ to return Int
+- Make gprime consistently return Complex{Int}; correct powermod exponents
+- Replace slow custom isPrime with Primes.isprime binding
+- Safer img_ops for empty inputs
+- Include 1 in sqrt_radius range
+- Add r2_fast (sum-of-two-squares formula) and r2-based π estimate
+- Add quick sanity column r2_matches in filtered frame
