@@ -204,7 +204,7 @@ md"""
 radius = 100000
 
 # ╔═╡ 72460280-bbfa-492d-8270-e44293266e09
-df_pi = DataFrame(sqrt_radius= 2:radius)
+df_pi = DataFrame(sqrt_radius= 1:radius)
 
 # ╔═╡ bb47b3f0-b4d7-43d8-945f-ee94e9def8f6
 begin
@@ -262,9 +262,9 @@ int(x) = floor(Int, x)
 
 # ╔═╡ af516c3f-6fcf-4db7-a89f-30b1e813863c
 begin
-	"""
+    """
     gaussianPrime(arr)
-	
+    
 Compute the Gaussian primes from a list of primes. See [here for implementation](https://stackoverflow.com/questions/2269810/whats-a-nice-method-to-factor-gaussian-integers)
 
 # Examples
@@ -273,85 +273,94 @@ julia> gprime(5)
 [2+1im, 2-1im]
 ```
 """
-	function gprime(arr)
-		dict = Dict()
-	    x = Complex[]
-	    for p in arr
-	        if p == 2
-	            push!(x, 1 + 1im)
-	            push!(x, 1 - 1im)
-	        elseif mod(p, 4) == 3 # p = 3 mod 4, q = p.
-	            push!(x, p)
-	        elseif mod(p, 4) == 1 # p = 1 mod 4
-	            if haskey(dict, p)
-	                push!(x, dict[p])
-	                push!(x, conj(dict[p]))
-	            else
-	                for k in 2:(p-1)
-	                   # https://rosettacode.org/wiki/Modular_exponentiation#Julia2
-						y = powermod(k,int((p-1)/2),p)
-						if mod(y, p) == mod(-1, p)
-	                        #real = BigInt(k)^((p - 1) / 4)
-							real = powermod(k,int((p - 1) / 4),p)
-	                        factor = gcd(Complex(p), (real) + 1im)
-	                        if !in(factor, x)
-	                            factor_complex_cong = conj(factor)
-	                            push!(x, factor)
-	                            push!(x, factor_complex_cong)
-	                            dict[p] = factor
-	                            break
-	                        end
-	                    end
-	                end
-	            end
-	        end
-	    end
-	    x
-	end
+    function gprime(arr)
+        dict = Dict{Int,Complex{Int}}()
+        x = Complex{Int}[]
+        for p in arr
+            if p == 2
+                push!(x, complex(1, 1))
+                push!(x, complex(1, -1))
+            elseif mod(p, 4) == 3 # p = 3 mod 4, q = p.
+                push!(x, complex(p, 0))
+            elseif mod(p, 4) == 1 # p = 1 mod 4
+                if haskey(dict, p)
+                    push!(x, dict[p])
+                    push!(x, conj(dict[p]))
+                else
+                    for k in 2:(p-1)
+                       # https://rosettacode.org/wiki/Modular_exponentiation#Julia2
+                        y = powermod(k, div(p-1, 2), p)
+                        if mod(y, p) == mod(-1, p)
+                            r = powermod(k, div(p - 1, 4), p)
+                            factor = gcd(complex(p, 0), complex(r, 1))
+                            if !in(factor, x)
+                                factor_complex_cong = conj(factor)
+                                push!(x, factor)
+                                push!(x, factor_complex_cong)
+                                dict[p] = factor
+                                break
+                            end
+                        end
+                    end
+                end
+            end
+        end
+        x
+    end
 end
 
 # ╔═╡ 83fee348-2ee5-4612-b909-f73a800b9cb6
 begin
-	"""
-    mod_4(x)
+    """
+    mod_4(x::Integer)
 
-For inputs 1 above a multiple of 4, the output is 1. For inputs 3 above a multiple of 4, it outputs 3. 
-	
+Return 1 if x ≡ 1 (mod 4), 3 if x ≡ 3 (mod 4), otherwise 0.
+    
 # Examples
 ```julia-repl
-julia>  mod_4(7) = 3
+julia> mod_4(7)
+3
+
+julia> mod_4(6)
+0
 ```
 """ 
-	function mod_4(x)
-		if mod1(x,4) == 1
-			1
-		elseif mod1(x, 4) == 3
-			3
-		end
-	end
+    function mod_4(x::Integer)
+        r = mod(x, 4)
+        if r == 1
+            return 1
+        elseif r == 3
+            return 3
+        else
+            return 0
+        end
+    end
 end
 
 # ╔═╡ 763c51c1-a1a8-4262-8d40-14799603279a
 begin
-	"""
+    """
     Χ(n)
 
 For inputs 1 above a multiple of 4, the output of Χ is 1. For inputs 3 above a multiple of 4, it outputs -1. And for even numbers, it gives 0. if you evaluate Χ on the natural numbers, it gives this nice cyclic pattern 1, 0, -1, 0, and repeat.
-	
+    
 # Examples
 ```julia-repl
 julia>  Χ(7) = -1
 ```
 """ 
-	function Χ(n)
-			if mod_4(n) == 1
-				1
-			elseif mod_4(n) == 3
-				-1
-			else iseven(n)
-				0
-			end
-	end
+    function Χ(n)::Int
+        m = mod_4(n)
+        if m == 1
+            return 1
+        elseif m == 3
+            return -1
+        elseif iseven(n)
+            return 0
+        else
+            return 0
+        end
+    end
 end
 
 # ╔═╡ 46b2299a-3c88-4f5f-9f46-3c773c70b189
@@ -389,16 +398,8 @@ end
 
 # ╔═╡ 2de72be6-3ebd-4282-8ab0-d51bbe727aea
 # https://oodlescoop.com/tutorials/julia/programs/julia-program-to-check-if-a-number-is-prime-number-or-not-;jsessionid=2F142D01C14896A498C338A5BAE587FF
-function isPrime(num)    
-    isPrime = true
-        for i in 2:convert(Int64, round(num/2, digits = 0))
-            if num % i == 0
-                isPrime = false
-                break
-            end
-        end
-    return isPrime
-end
+# Deprecated: use Primes.isprime instead (kept for clarity in notebook history)
+isPrime(num::Integer) = Primes.isprime(num)
 
 # ╔═╡ 9d7518a1-95a5-42fc-b268-87b100c3e96d
 df_pi.isPrime = Primes.isprime.(df_pi.sqrt_radius)
@@ -524,10 +525,10 @@ df_pi
 
 # ╔═╡ 9ca7013a-3115-4931-b9da-034934e50295
 function img_ops(collection)
-	if collection == 0
-		return 0
-	end
-	unique(vcat(collection, collection * (0+1im), collection * (0-1im), collection * (-1+0im)), dims=1)
+    if isempty(collection)
+        return collection
+    end
+    unique(vcat(collection, collection * (0+1im), collection * (0-1im), collection * (-1+0im)), dims=1)
 end
 
 # ╔═╡ 09f4b07a-877c-4357-bbe1-4d46606e8dec
@@ -535,6 +536,41 @@ df_pi.img_ops = img_ops.(df_pi.cartesian)
 
 # ╔═╡ e3cbf4ec-8e7b-44ce-887f-b978524c5cbf
 df_pi.size = size.(df_pi.img_ops,1)
+
+# Compare with fast arithmetic formula for r2(n)
+df_pi.r2_fast = r2_fast.(df_pi.sqrt_radius)
+
+# Fast r2(n): number of representations as sum of two squares
+"""
+r2_fast(n)
+
+Return the number of representations of n as a^2 + b^2 with a,b ∈ ℤ, counting order and signs.
+
+Uses the classical formula:
+ - If any prime p ≡ 3 (mod 4) divides n to an odd power, r2(n) = 0.
+ - Otherwise r2(n) = 4 * ∏_{p≡1 (mod 4)} (e_p + 1), where e_p are exponents in the factorization of n.
+"""
+function r2_fast(n::Integer)::Int
+    if n == 0
+        return 1
+    elseif n < 0
+        return 0
+    end
+    primes = Primes.factor(Vector, n)
+    exponents = countmap(primes)
+    for (p, e) in exponents
+        if mod(p, 4) == 3 && isodd(e)
+            return 0
+        end
+    end
+    product = 1
+    for (p, e) in exponents
+        if mod(p, 4) == 1
+            product *= (e + 1)
+        end
+    end
+    return 4 * product
+end
 
 # ╔═╡ 10ed3abf-ae21-453c-ae7b-c27d0f106dae
 df_pi.chi = computeΧ.(df_pi.factors)
@@ -549,12 +585,17 @@ end
 
 # ╔═╡ c35e5ed6-879d-4a29-b6e5-69e0d1ea669b
 df_pi_1 = filter([:size, :chi] => !complex_filter, df_pi)
+# quick sanity: r2_fast should match `size` when not zero
+df_pi_1.r2_matches = df_pi_1.r2_fast .== df_pi_1.size
 
 # ╔═╡ 11603b9f-0da0-43b4-9e22-a93a19b79d9f
 sum(df_pi.size)/radius
 
 # ╔═╡ b79e53f5-89c7-45c5-9ada-cff0f7345bb8
 pi = (sum(df_pi.chi)-1)/radius
+
+# π estimate via lattice count average r2(n) ≈ π
+pi_from_r2 = sum(df_pi.r2_fast) / radius
 
 # ╔═╡ a9d4a058-7ab0-42eb-b879-3787dcedf1c0
 # https://discourse.julialang.org/t/how-to-convert-all-nothings-in-dataframe-to-missing/54004/10
