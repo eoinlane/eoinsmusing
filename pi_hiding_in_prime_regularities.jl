@@ -127,54 +127,62 @@ See here:
 """
 
 # ╔═╡ f89f32a4-2d1d-4905-90d9-6746576bf432
+md"""
+### Figure controls
+
+Toggle the Makie figure on or off to speed up recomputes.
+"""
+
+@bind show_plot PlutoUI.CheckBox(default=true)
+
 # https://docs.makie.org/stable/tutorials/basic-tutorial/
 begin
-	f = Figure()
-	ax = Axis(f[1, 1], 
-    	title = "A Makie Axis",
-    	xlabel = "The x label",
-    	ylabel = "The y label"
-	)
-#x = range(0, 10, length=100)
-#y = sin.(x)
-	r = 5
-	Θ = LinRange(0,2*π, 500)
-	x = r*sin.(Θ)
-	y = r*cos.(Θ)
-	# https://discourse.julialang.org/t/how-to-add-grid-lines-on-top-of-a-heatmap-in-makie/77578
-	f, ax, l1 = lines(x, y, linewidth = .5, color = :red, label = "circle";
-		figure = (; resolution = (500, 500)),	
-		axis = (; title = L"\frac{\sin{x}}{x}", xlabel = L"\Re(z)", ylabel = L"\Im(z)", aspect = DataAspect(), xgridcolor = :black, ygridcolor = :black, xgridwidth = 0.5, ygridwidth = 0.5, xminorgridcolor = :grey,
-    	yminorgridcolor = :grey,
-		xminorgridvisible = true,
-		yminorgridvisible = true,
-		xminorticks = IntervalsBetween(3),
-		yminorticks = IntervalsBetween(3),
-		#https://github.com/MakieOrg/Makie.jl/issues/158
-		backgroundcolor = :transparent,
-        leftspinevisible = false,
-        rightspinevisible = false,
-        bottomspinevisible = false,
-        topspinevisible = false,
-		)
-	)
-	scatter!(ax, 4, 3, color = :yellow, label = "point")
-	scatter!(ax, 3, 4, color = :yellow)
-	scatter!(ax, -3, 4, color = :yellow)
-	scatter!(ax, -4, 3, color = :yellow)
-	scatter!(ax, -3, -4, color = :yellow)
-	scatter!(ax, -4, -3, color = :yellow)
-	scatter!(ax, 3, -4, color = :yellow)
-	scatter!(ax, 4, -3, color = :yellow)
-	#\textcolor{blue}
-	text!(L"(-3+4i)", position=(-3,4))
-	text!(L"\sqrt{25}", position=(2,0))
-	axislegend()
-	xs = [Point2f(0,0)]
-	ys = [Point2f(5,0)]
-	arrows!(ax, xs, ys, linewidth = 2, arrowsize = 15, color = :red)
-	#tightlimits!(ax)
-f
+    if show_plot
+        f = Figure()
+        ax = Axis(f[1, 1], 
+            title = "A Makie Axis",
+            xlabel = "The x label",
+            ylabel = "The y label"
+        )
+        r = 5
+        Θ = LinRange(0,2*π, 500)
+        x = r*sin.(Θ)
+        y = r*cos.(Θ)
+        # https://discourse.julialang.org/t/how-to-add-grid-lines-on-top-of-a-heatmap-in-makie/77578
+        f, ax, l1 = lines(x, y, linewidth = .5, color = :red, label = "circle";
+            figure = (; resolution = (500, 500)), 
+            axis = (; title = L"\frac{\sin{x}}{x}", xlabel = L"\Re(z)", ylabel = L"\Im(z)", aspect = DataAspect(), xgridcolor = :black, ygridcolor = :black, xgridwidth = 0.5, ygridwidth = 0.5, xminorgridcolor = :grey,
+            yminorgridcolor = :grey,
+            xminorgridvisible = true,
+            yminorgridvisible = true,
+            xminorticks = IntervalsBetween(3),
+            yminorticks = IntervalsBetween(3),
+            #https://github.com/MakieOrg/Makie.jl/issues/158
+            backgroundcolor = :transparent,
+            leftspinevisible = false,
+            rightspinevisible = false,
+            bottomspinevisible = false,
+            topspinevisible = false,
+            )
+        )
+        scatter!(ax, 4, 3, color = :yellow, label = "point")
+        scatter!(ax, 3, 4, color = :yellow)
+        scatter!(ax, -3, 4, color = :yellow)
+        scatter!(ax, -4, 3, color = :yellow)
+        scatter!(ax, -3, -4, color = :yellow)
+        scatter!(ax, -4, -3, color = :yellow)
+        scatter!(ax, 3, -4, color = :yellow)
+        scatter!(ax, 4, -3, color = :yellow)
+        text!(L"(-3+4i)", position=(-3,4))
+        text!(L"\sqrt{25}", position=(2,0))
+        axislegend()
+        xs = [Point2f(0,0)]
+        ys = [Point2f(5,0)]
+        arrows!(ax, xs, ys, linewidth = 2, arrowsize = 15, color = :red)
+        f
+    else
+        nothing
+    end
 end
 
 # ╔═╡ ea560410-5c83-4fe2-afd5-03d09af0685d
@@ -201,7 +209,8 @@ md"""
 """
 
 # ╔═╡ 542584b1-5cff-4096-9626-bda7c57df38c
-radius = 100000
+# Interactive radius control (Pluto slider)
+@bind radius PlutoUI.Slider(1_000:1_000:200_000; default=10_000, show_value=true)
 
 # ╔═╡ 72460280-bbfa-492d-8270-e44293266e09
 df_pi = DataFrame(sqrt_radius= 1:radius)
