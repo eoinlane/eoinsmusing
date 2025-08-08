@@ -43,9 +43,9 @@ TableOfContents()   # from PlutoUI
 	</p>
 <p>
 <ol>
-<li>Count lattics points </li>
+<li>Count lattice points </li>
 <li>Things like 17 = 4<sup>2</sup> + 1<sup>2</sup> </li>
-<li>Things like 17 = (4 + <i>i</i>)(4 - i<i>i</i>)  </li>
+<li>Things like 17 = (4 + <i>i</i>)(4 - <i>i</i>)  </li>
 <li>Introduce  	&#967; </li>
 </ol>
 </p>
@@ -142,7 +142,7 @@ begin
 	x = r*sin.(Θ)
 	y = r*cos.(Θ)
 	# https://discourse.julialang.org/t/how-to-add-grid-lines-on-top-of-a-heatmap-in-makie/77578
-	f, ax, l1 = lines(x, y, linewidth = .5, color = :red, label = "cicle";
+	f, ax, l1 = lines(x, y, linewidth = .5, color = :red, label = "circle";
 		figure = (; resolution = (500, 500)),	
 		axis = (; title = L"\frac{\sin{x}}{x}", xlabel = L"\Re(z)", ylabel = L"\Im(z)", aspect = DataAspect(), xgridcolor = :black, ygridcolor = :black, xgridwidth = 0.5, ygridwidth = 0.5, xminorgridcolor = :grey,
     	yminorgridcolor = :grey,
@@ -294,9 +294,9 @@ julia> gprime(5)
                             r = powermod(k, div(p - 1, 4), p)
                             factor = gcd(complex(p, 0), complex(r, 1))
                             if !in(factor, x)
-                                factor_complex_cong = conj(factor)
+                            factor_complex_conj = conj(factor)
                                 push!(x, factor)
-                                push!(x, factor_complex_cong)
+                                push!(x, factor_complex_conj)
                                 dict[p] = factor
                                 break
                             end
@@ -432,7 +432,7 @@ df_pi
 md"""
 ## (Almost) Unique Gaussian prime factorization of $\sqrt{radius}$.
 
-Analogy with primes Factoring works very similarly in Gaussian integers. Some numbers, like 5, can be factored into smaller Gaussian integers, in this case (2+i)(2-i). This Gaussian integer (2+i), cant be factored into anything smaller, so we call it a “Gaussian prime”. This factorization is almost unique. other than the things you can get by multiplying some of these factors by -1, i or -i, factorization within the Gaussian integers is unique.
+Analogy with primes: factoring works very similarly in Gaussian integers. Some numbers, like 5, can be factored into smaller Gaussian integers, in this case (2+i)(2-i). This Gaussian integer (2+i) can’t be factored into anything smaller, so we call it a “Gaussian prime”. This factorization is almost unique: other than the things you can get by multiplying some of these factors by -1, i or -i, factorization within the Gaussian integers is unique.
 """
 
 # ╔═╡ b899d763-5636-4142-b93b-30b578144d01
@@ -598,8 +598,7 @@ pi = (sum(df_pi.chi)-1)/radius
 pi_from_r2 = sum(df_pi.r2_fast) / radius
 
 # ╔═╡ a9d4a058-7ab0-42eb-b879-3787dcedf1c0
-# https://discourse.julialang.org/t/how-to-convert-all-nothings-in-dataframe-to-missing/54004/10
-df_pi_1.mod4 = replace(df_pi_1.mod4, nothing => missing)
+# mod4 is total now; replacement no longer needed
 
 # ╔═╡ c193d0f7-44d5-44ab-9a0e-1271e23b06f6
 
