@@ -45,7 +45,7 @@ TableOfContents()   # from PlutoUI
 <ol>
 <li>Count lattics points </li>
 <li>Things like 17 = 4<sup>2</sup> + 1<sup>2</sup> </li>
-<li>Things like 17 = (4 + <i>i</i>)(4 - i<i>i</i>)  </li>
+<li>Things like 17 = (4 + <i>i</i>)(4 - <i>i</i>)  </li>
 <li>Introduce  	&#967; </li>
 </ol>
 </p>
@@ -348,7 +348,7 @@ julia>  Χ(7) = -1
 				1
 			elseif mod_4(n) == 3
 				-1
-			else iseven(n)
+			elseif iseven(n)
 				0
 			end
 	end
@@ -388,17 +388,7 @@ julia>  Χ(7) = -1
 end
 
 # ╔═╡ 2de72be6-3ebd-4282-8ab0-d51bbe727aea
-# https://oodlescoop.com/tutorials/julia/programs/julia-program-to-check-if-a-number-is-prime-number-or-not-;jsessionid=2F142D01C14896A498C338A5BAE587FF
-function isPrime(num)    
-    isPrime = true
-        for i in 2:convert(Int64, round(num/2, digits = 0))
-            if num % i == 0
-                isPrime = false
-                break
-            end
-        end
-    return isPrime
-end
+
 
 # ╔═╡ 9d7518a1-95a5-42fc-b268-87b100c3e96d
 df_pi.isPrime = Primes.isprime.(df_pi.sqrt_radius)
@@ -554,7 +544,7 @@ df_pi_1 = filter([:size, :chi] => !complex_filter, df_pi)
 sum(df_pi.size)/radius
 
 # ╔═╡ b79e53f5-89c7-45c5-9ada-cff0f7345bb8
-pi = (sum(df_pi.chi)-1)/radius
+pi_approx = (sum(df_pi.chi)-1)/radius
 
 # ╔═╡ a9d4a058-7ab0-42eb-b879-3787dcedf1c0
 # https://discourse.julialang.org/t/how-to-convert-all-nothings-in-dataframe-to-missing/54004/10
