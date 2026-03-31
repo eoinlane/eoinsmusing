@@ -273,8 +273,8 @@ julia> gprime(5)
 [2+1im, 2-1im]
 ```
 """
+	const _gprime_cache = Dict{Int, Complex}()
 	function gprime(arr)
-		dict = Dict()
 	    x = Complex[]
 	    for p in arr
 	        if p == 2
@@ -283,9 +283,9 @@ julia> gprime(5)
 	        elseif mod(p, 4) == 3 # p = 3 mod 4, q = p.
 	            push!(x, p)
 	        elseif mod(p, 4) == 1 # p = 1 mod 4
-	            if haskey(dict, p)
-	                push!(x, dict[p])
-	                push!(x, conj(dict[p]))
+	            if haskey(_gprime_cache, p)
+	                push!(x, _gprime_cache[p])
+	                push!(x, conj(_gprime_cache[p]))
 	            else
 	                for k in 2:(p-1)
 	                   # https://rosettacode.org/wiki/Modular_exponentiation#Julia2
@@ -298,7 +298,7 @@ julia> gprime(5)
 	                            factor_complex_cong = conj(factor)
 	                            push!(x, factor)
 	                            push!(x, factor_complex_cong)
-	                            dict[p] = factor
+	                            _gprime_cache[p] = factor
 	                            break
 	                        end
 	                    end
@@ -457,7 +457,6 @@ julia>	@testset "Complex Product" begin \\\n @test v2(cc25, 25) == Complex[3+4im
 	    # if the count of p is even then split the p equality into org, and con
 	    # if it is odd result zero complex numbers and the columns will be unbalanced
 	    filtered_array = filter(y -> mod_4(real(y)) == 3 && imag(y) ==0, array)
-	    A = filtered_array
 		# https://discourse.julialang.org/t/counting-number-of-occurences-in-an-array/31613/2
 	    c = counter(filtered_array)
 	    for key in collect(keys(c))
