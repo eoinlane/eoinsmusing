@@ -4,6 +4,18 @@
 using Markdown
 using InteractiveUtils
 
+# This Pluto notebook uses @bind for interactivity. When running this notebook outside of Pluto, the following 'mock version' of @bind gives bound variables a default value (instead of an error).
+macro bind(def, element)
+    #! format: off
+    return quote
+        local iv = try Base.loaded_modules[Base.PkgId(Base.UUID("6e696c72-6542-2067-7265-42206c756150"), "AbstractPlutoDingetjes")].Bonds.initial_value catch; b -> missing; end
+        local el = $(esc(element))
+        global $(esc(def)) = Core.applicable(Base.get, el) ? Base.get(el) : iv(el)
+        el
+    end
+    #! format: on
+end
+
 # ╔═╡ eae0d1c0-8b19-43e4-97f8-21f89708018e
 begin
 	using PlutoUI, PlutoTeachingTools, HypertextLiteral
@@ -139,7 +151,7 @@ begin
 	x = r*sin.(Θ)
 	y = r*cos.(Θ)
 	# https://discourse.julialang.org/t/how-to-add-grid-lines-on-top-of-a-heatmap-in-makie/77578
-	f, ax, l1 = lines(x, y, linewidth = .5, color = :red, label = "cicle";
+	f, ax, l1 = lines(x, y, linewidth = .5, color = :red, label = "circle";
 		figure = (; resolution = (500, 500)),	
 		axis = (; title = L"Lattice points on a circle of radius $\sqrt{25}$", xlabel = L"\Re(z)", ylabel = L"\Im(z)", aspect = DataAspect(), xgridcolor = :black, ygridcolor = :black, xgridwidth = 0.5, ygridwidth = 0.5, xminorgridcolor = :grey,
     	yminorgridcolor = :grey,
@@ -198,10 +210,10 @@ md"""
 """
 
 # ╔═╡ 542584b1-5cff-4096-9626-bda7c57df38c
-radius = 100000
+@bind radius PlutoUI.Slider(1_000:1_000:200_000; default=100_000, show_value=true)
 
 # ╔═╡ 72460280-bbfa-492d-8270-e44293266e09
-df_pi = DataFrame(sqrt_radius= 2:radius)
+df_pi = DataFrame(sqrt_radius= 1:radius)
 
 # ╔═╡ bb47b3f0-b4d7-43d8-945f-ee94e9def8f6
 begin
@@ -270,9 +282,9 @@ julia> gprime(5)
 [2+1im, 2-1im]
 ```
 """
-	const _gprime_cache = Dict{Int, Complex}()
+	const _gprime_cache = Dict{Int, Complex{Int}}()
 	function gprime(arr)
-	    x = Complex[]
+	    x = Complex{Int}[]
 	    for p in arr
 	        if p == 2
 	            push!(x, 1 + 1im)
@@ -286,10 +298,9 @@ julia> gprime(5)
 	            else
 	                for k in 2:(p-1)
 	                   # https://rosettacode.org/wiki/Modular_exponentiation#Julia2
-						y = powermod(k,int((p-1)/2),p)
+						y = powermod(k, div(p-1, 2), p)
 						if mod(y, p) == mod(-1, p)
-	                        #real = BigInt(k)^((p - 1) / 4)
-							real = powermod(k,int((p - 1) / 4),p)
+							real = powermod(k, div(p-1, 4), p)
 	                        factor = gcd(Complex(p), (real) + 1im)
 	                        if !in(factor, x)
 	                            factor_complex_cong = conj(factor)
@@ -319,11 +330,14 @@ For inputs 1 above a multiple of 4, the output is 1. For inputs 3 above a multip
 julia>  mod_4(7) = 3
 ```
 """ 
-	function mod_4(x)
-		if mod1(x,4) == 1
-			1
-		elseif mod1(x, 4) == 3
-			3
+	function mod_4(x::Integer)
+		r = mod(x, 4)
+		if r == 1
+			return 1
+		elseif r == 3
+			return 3
+		else
+			return 0
 		end
 	end
 end
@@ -340,14 +354,15 @@ For inputs 1 above a multiple of 4, the output of Χ is 1. For inputs 3 above a 
 julia>  Χ(7) = -1
 ```
 """ 
-	function Χ(n)
-			if mod_4(n) == 1
-				1
-			elseif mod_4(n) == 3
-				-1
-			elseif iseven(n)
-				0
-			end
+	function Χ(n)::Int
+		m = mod_4(n)
+		if m == 1
+			return 1
+		elseif m == 3
+			return -1
+		else
+			return 0
+		end
 	end
 end
 
@@ -423,7 +438,7 @@ df_pi
 md"""
 ## (Almost) Unique Gaussian prime factorization of $\sqrt{radius}$.
 
-Analogy with primes Factoring works very similarly in Gaussian integers. Some numbers, like 5, can be factored into smaller Gaussian integers, in this case (2+i)(2-i). This Gaussian integer (2+i), cant be factored into anything smaller, so we call it a “Gaussian prime”. This factorization is almost unique. other than the things you can get by multiplying some of these factors by -1, i or -i, factorization within the Gaussian integers is unique.
+Analogy with primes: factoring works very similarly in Gaussian integers. Some numbers, like 5, can be factored into smaller Gaussian integers, in this case (2+i)(2-i). This Gaussian integer (2+i) can't be factored into anything smaller, so we call it a “Gaussian prime”. This factorization is almost unique: other than the things you can get by multiplying some of these factors by -1, i or -i, factorization within the Gaussian integers is unique.
 """
 
 # ╔═╡ b899d763-5636-4142-b93b-30b578144d01
@@ -515,8 +530,8 @@ df_pi
 
 # ╔═╡ 9ca7013a-3115-4931-b9da-034934e50295
 function img_ops(collection)
-	if collection == 0
-		return 0
+	if isempty(collection)
+		return collection
 	end
 	unique(vcat(collection, collection * (0+1im), collection * (0-1im), collection * (-1+0im)), dims=1)
 end
@@ -571,8 +586,7 @@ This is the circle hiding behind prime regularities — the way primes distribut
 pi_approx = (sum(df_pi.chi)-1)/radius
 
 # ╔═╡ a9d4a058-7ab0-42eb-b879-3787dcedf1c0
-# https://discourse.julialang.org/t/how-to-convert-all-nothings-in-dataframe-to-missing/54004/10
-df_pi_1.mod4 = replace(df_pi_1.mod4, nothing => missing)
+# mod_4 is now total (returns 0 instead of nothing), so no replacement needed
 
 # ╔═╡ c193d0f7-44d5-44ab-9a0e-1271e23b06f6
 # ╠═╡ disabled = true
