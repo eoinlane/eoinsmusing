@@ -28,9 +28,6 @@ TableOfContents()   # from PlutoUI
 
 # ╔═╡ 4e5fccf3-d7d3-4e7f-be3f-4eb24f5a4239
 @htl("""
-<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-
 <article class="learning">
 	<h4>
 		Pi hiding in prime regularities
@@ -43,7 +40,7 @@ TableOfContents()   # from PlutoUI
 	</p>
 <p>
 <ol>
-<li>Count lattics points </li>
+<li>Count lattice points </li>
 <li>Things like 17 = 4<sup>2</sup> + 1<sup>2</sup> </li>
 <li>Things like 17 = (4 + <i>i</i>)(4 - <i>i</i>)  </li>
 <li>Introduce  	&#967; </li>
@@ -144,7 +141,7 @@ begin
 	# https://discourse.julialang.org/t/how-to-add-grid-lines-on-top-of-a-heatmap-in-makie/77578
 	f, ax, l1 = lines(x, y, linewidth = .5, color = :red, label = "cicle";
 		figure = (; resolution = (500, 500)),	
-		axis = (; title = L"\frac{\sin{x}}{x}", xlabel = L"\Re(z)", ylabel = L"\Im(z)", aspect = DataAspect(), xgridcolor = :black, ygridcolor = :black, xgridwidth = 0.5, ygridwidth = 0.5, xminorgridcolor = :grey,
+		axis = (; title = L"Lattice points on a circle of radius $\sqrt{25}$", xlabel = L"\Re(z)", ylabel = L"\Im(z)", aspect = DataAspect(), xgridcolor = :black, ygridcolor = :black, xgridwidth = 0.5, ygridwidth = 0.5, xminorgridcolor = :grey,
     	yminorgridcolor = :grey,
 		xminorgridvisible = true,
 		yminorgridvisible = true,
@@ -547,6 +544,29 @@ df_pi_1 = filter([:size, :chi] => !complex_filter, df_pi)
 # ╔═╡ 11603b9f-0da0-43b4-9e22-a93a19b79d9f
 sum(df_pi.size)/radius
 
+# ╔═╡ d3a1f7c2-9e44-4b8a-a1d0-5f3c6e8b9d71
+md"""
+## From lattice points to π
+
+Why does counting lattice points lead to π? The key insight is the **Dirichlet character** Χ, which classifies how primes behave in the Gaussian integers:
+
+- Χ(n) = 1 if n ≡ 1 (mod 4) — these primes **split** into conjugate Gaussian primes
+- Χ(n) = -1 if n ≡ 3 (mod 4) — these primes **stay prime** in the Gaussian integers
+- Χ(n) = 0 if n is even
+
+The number of lattice points at distance √N from the origin equals 4 times the sum of Χ(d) over all divisors d of N. This is exactly what `computeΧ` calculates.
+
+When we sum the lattice point counts for all N from 1 to R, we are counting all lattice points inside a circle of radius √R. The area of that circle is πR, so:
+
+$\sum_{N=1}^{R} \text{(lattice points at distance } \sqrt{N}) \approx \pi R$
+
+Dividing by R gives us π. The deeper connection is that this sum telescopes into the **Leibniz formula**:
+
+$\frac{\pi}{4} = 1 - \frac{1}{3} + \frac{1}{5} - \frac{1}{7} + \cdots = \sum_{k=0}^{\infty} \frac{\chi(2k+1)}{2k+1}$
+
+This is the circle hiding behind prime regularities — the way primes distribute among residues mod 4 encodes π itself.
+"""
+
 # ╔═╡ b79e53f5-89c7-45c5-9ada-cff0f7345bb8
 pi_approx = (sum(df_pi.chi)-1)/radius
 
@@ -555,33 +575,12 @@ pi_approx = (sum(df_pi.chi)-1)/radius
 df_pi_1.mod4 = replace(df_pi_1.mod4, nothing => missing)
 
 # ╔═╡ c193d0f7-44d5-44ab-9a0e-1271e23b06f6
-
+# ╠═╡ disabled = true
+#=╠═╡
 CSV.write("prime_pi.csv", df_pi_1)
-
-
-# ╔═╡ 1a7ef4a2-50e0-4a72-804e-d07bfb6d2fdc
-# ╠═╡ disabled = true
-#=╠═╡
-polar.(Base.vect.(0.0,angle.(nums)),Base.vect.(0.0,abs.(nums)),marker="o")
   ╠═╡ =#
 
-# ╔═╡ 0f279169-a831-406d-ae6c-975ef16848a7
-# ╠═╡ disabled = true
-#=╠═╡
-plot(d)
-  ╠═╡ =#
 
-# ╔═╡ b0cc8956-47de-4f5f-a55f-4893fe84cb49
-# ╠═╡ disabled = true
-#=╠═╡
-plot(real(d),imag(d)) # or directly with plot(d)
-  ╠═╡ =#
-
-# ╔═╡ 68913bd8-92f9-41d5-ad90-5e9b7ac75678
-# ╠═╡ disabled = true
-#=╠═╡
-plot.show()
-  ╠═╡ =#
 
 # ╔═╡ Cell order:
 # ╟─eae0d1c0-8b19-43e4-97f8-21f89708018e
@@ -628,11 +627,8 @@ plot.show()
 # ╠═332a89f4-ee30-4c27-8f77-af55144510fb
 # ╠═c35e5ed6-879d-4a29-b6e5-69e0d1ea669b
 # ╠═11603b9f-0da0-43b4-9e22-a93a19b79d9f
+# ╟─d3a1f7c2-9e44-4b8a-a1d0-5f3c6e8b9d71
 # ╠═b79e53f5-89c7-45c5-9ada-cff0f7345bb8
 # ╠═a9d4a058-7ab0-42eb-b879-3787dcedf1c0
 # ╠═a28594c7-c134-4548-9ac1-1049bbe14f4b
 # ╠═c193d0f7-44d5-44ab-9a0e-1271e23b06f6
-# ╠═1a7ef4a2-50e0-4a72-804e-d07bfb6d2fdc
-# ╠═0f279169-a831-406d-ae6c-975ef16848a7
-# ╠═b0cc8956-47de-4f5f-a55f-4893fe84cb49
-# ╠═68913bd8-92f9-41d5-ad90-5e9b7ac75678
