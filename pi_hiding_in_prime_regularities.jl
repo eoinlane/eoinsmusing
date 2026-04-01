@@ -368,22 +368,27 @@ julia>  Χ(7) = -1
 ```
 """ 
 	function computeΧ(array)
-		D = Dict
-		x = []
-		collection = []
-		prod = 1
-			#@show(array)
-			D = countmap(array)
-			for (key, val) in D
-				s = 0
-				for i in 0:val
-					s += Χ(key^i)
-					#push!(collection,s)
-				end
-				prod = prod * s
+		isempty(array) && return 4
+		result = 1
+		i = 1
+		while i <= length(array)
+			p = array[i]
+			e = 1
+			while i + e <= length(array) && array[i + e] == p
+				e += 1
 			end
-			#print(prod)
-		4*prod
+			if p == 2
+				# Χ(2^i) = 0 for i ≥ 1, so sum is always 1
+			elseif mod(p, 4) == 1
+				# Χ(p^i) = 1 for all i, so sum = e + 1
+				result *= (e + 1)
+			else # p ≡ 3 (mod 4)
+				# Χ(p^i) alternates 1, -1, ..., sum = 1 if e even, 0 if odd
+				isodd(e) && return 0
+			end
+			i += e
+		end
+		4 * result
 	end
 end
 
